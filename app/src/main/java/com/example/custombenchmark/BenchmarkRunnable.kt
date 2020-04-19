@@ -20,7 +20,7 @@ class BenchmarkRunnable(
             priority = Thread.MAX_PRIORITY,
             name = "benchmark-single"
         ) {
-            result.SingleCoreScore = benchmark(array.clone())
+            result.SingleCoreScore = benchmark(array.copyOf())
         }
 
         while (t.isAlive) Thread.sleep(1000)
@@ -36,7 +36,7 @@ class BenchmarkRunnable(
                 priority = Thread.MAX_PRIORITY,
                 name = "benchmark-multi-$it"
             ) {
-                val score = benchmark(array.clone())
+                val score = benchmark(array.copyOf())
                 synchronized(result) {
                     result.MultiCoreScore.add(score)
                 }

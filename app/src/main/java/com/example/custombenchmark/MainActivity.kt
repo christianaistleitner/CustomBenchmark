@@ -31,13 +31,13 @@ class MainActivity : AppCompatActivity() {
                 r.forEach {
                     logTextView.append(
                         "SC-Score: ${it.SingleCoreScore} | " +
-                                "MC-Score: ${it.MultiCoreScore.average().toLong()}\n\n"
+                                "MC-Score: ${it.MultiCoreScore.average().toLong()}\n"
                     )
                 }
                 logTextView.append("-------- AVG ---------\n")
                 logTextView.append(
                     "SC-Score: ${r.map { it.SingleCoreScore }.average().toLong()} | " +
-                            "MC-Score: ${r.flatMap { it.MultiCoreScore }.average().toLong()}\n\n"
+                            "MC-Score: ${r.flatMap { it.MultiCoreScore }.average().toLong()}\n"
                 )
 
                 startButton.text = "Start"
