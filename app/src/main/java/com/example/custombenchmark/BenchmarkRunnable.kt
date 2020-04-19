@@ -7,14 +7,11 @@ class BenchmarkRunnable(
     private val c: (BenchmarkResult) -> Unit
 ) : Runnable {
 
-    companion object {
-        private val data: LongArray = Random(17).longs(50 * 1000).toArray()
-    }
-
     override fun run() {
         val result = BenchmarkResult()
+        val array = Random(17).longs(100 * 1000).toArray()
 
-        Thread.sleep(5000)
+        Thread.sleep(2000)
 
         // single core
         val t = thread(
@@ -23,11 +20,11 @@ class BenchmarkRunnable(
             priority = Thread.MAX_PRIORITY,
             name = "benchmark-single"
         ) {
-            result.SingleCoreScore = benchmark(data.copyOf())
+            result.SingleCoreScore = benchmark(array.clone())
         }
 
         while (t.isAlive) Thread.sleep(1000)
-        Thread.sleep(5000)
+        Thread.sleep(2000)
 
         // multi core
         val n = Runtime.getRuntime().availableProcessors()
@@ -39,7 +36,7 @@ class BenchmarkRunnable(
                 priority = Thread.MAX_PRIORITY,
                 name = "benchmark-multi-$it"
             ) {
-                val score = benchmark(data.copyOf())
+                val score = benchmark(array.clone())
                 synchronized(result) {
                     result.MultiCoreScore.add(score)
                 }
