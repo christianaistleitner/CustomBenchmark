@@ -9,7 +9,7 @@ class BenchmarkRunnable(
 
     override fun run() {
         val result = BenchmarkResult()
-        val array = Random(17).longs(100 * 1000).toArray()
+        val array = Random(17).longs(50 * 1000).toArray()
 
         Thread.sleep(2000)
 
