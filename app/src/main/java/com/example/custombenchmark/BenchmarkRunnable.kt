@@ -1,58 +1,21 @@
 package com.example.custombenchmark
 
 import java.util.*
-import kotlin.concurrent.thread
 
 class BenchmarkRunnable(
     private val c: (BenchmarkResult) -> Unit
 ) : Runnable {
 
     override fun run() {
-        val result = BenchmarkResult()
-        val array = Random(17).longs(50 * 1000).toArray()
-
+        val result = BenchmarkResult();
         Thread.sleep(2000)
-
-        // single core
-        val t = thread(
-            start = true,
-            isDaemon = true,
-            priority = Thread.MAX_PRIORITY,
-            name = "benchmark-single"
-        ) {
-            result.SingleCoreScore = benchmark(array.clone())
-        }
-
-        while (t.isAlive) Thread.sleep(1000)
-        Thread.sleep(2000)
-
-        // multi core
-        val n = Runtime.getRuntime().availableProcessors()
-        val ts = mutableListOf<Thread>()
-        repeat(n) {
-            ts.add(thread(
-                start = false,
-                isDaemon = true,
-                priority = Thread.MAX_PRIORITY,
-                name = "benchmark-multi-$it"
-            ) {
-                val score = benchmark(array.clone())
-                synchronized(result) {
-                    result.MultiCoreScore.add(score)
-                }
-            })
-        }
-        ts.forEach { it.start() }
-
-        while (ts.any { it.isAlive }) Thread.sleep(1000)
-
-        c.invoke(result)
-    }
-
-    fun benchmark(array: LongArray): Long {
+        val array = Random(17).longs(25 * 1000).toArray()
+        Thread.sleep(3000)
         val stopwatch = System.currentTimeMillis()
         bubbleSort(array)
-        return System.currentTimeMillis() - stopwatch
+        result.SingleCoreScore = System.currentTimeMillis() - stopwatch
+        Thread.sleep(3000)
+        c.invoke(result)
     }
 
     fun bubbleSort(arr: LongArray) {

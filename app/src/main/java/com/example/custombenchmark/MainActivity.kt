@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var logTextView:  TextView
+    private lateinit var logTextView: TextView
     private lateinit var startButton: Button
 
     private lateinit var handler: Handler
@@ -28,20 +28,22 @@ class MainActivity : AppCompatActivity() {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 val r = msg.obj as Array<BenchmarkResult>
+                logTextView.text = ""
                 r.forEach {
-                    logTextView.append(
-                        "SC-Score: ${it.SingleCoreScore} | " +
-                                "MC-Score: ${it.MultiCoreScore.average().toLong()}\n"
-                    )
+                    logTextView.append("SC-Score: ${it.SingleCoreScore}\n")
                 }
                 logTextView.append("-------- AVG ---------\n")
                 logTextView.append(
-                    "SC-Score: ${r.map { it.SingleCoreScore }.average().toLong()} | " +
-                            "MC-Score: ${r.flatMap { it.MultiCoreScore }.average().toLong()}\n"
+                    "SC-Score (with dry-run): ${r.map { it.SingleCoreScore }.average().toLong()}\n"
+                )
+                logTextView.append(
+                    "SC-Score: ${r.map { it.SingleCoreScore }.drop(1).average().toLong()}\n"
                 )
 
-                startButton.text = "Start"
-                startButton.isEnabled = true
+                if (r.size == 11) {
+                    startButton.text = "Start"
+                    startButton.isEnabled = true
+                }
             }
         }
 
@@ -54,11 +56,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun runBenchmark(n: Int = 10, results: MutableList<BenchmarkResult> = mutableListOf()) {
+    private fun runBenchmark(n: Int = 11, results: MutableList<BenchmarkResult> = mutableListOf()) {
         Thread(BenchmarkRunnable { r ->
             results.add(r)
-            if (results.size == n) handler.obtainMessage(1, results.toTypedArray()).sendToTarget()
-            else runBenchmark(n, results)
+            handler.obtainMessage(1, results.toTypedArray()).sendToTarget()
+            if (results.size != n) runBenchmark(n, results)
         }).apply {
             isDaemon = true
             priority = Thread.MAX_PRIORITY
